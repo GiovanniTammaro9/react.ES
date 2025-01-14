@@ -3,6 +3,7 @@ import './app.css'
 import Counter from './assets/Counter';
 import Textinput from "./Textinput";
 import LoginForm from "./LoginForm";
+import Uncontrolledinput from "./Uncontrolledinput";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Textinput />
       <Counter />
       <LoginForm />
+      <Uncontrolledinput />
     </div>
     
   );
