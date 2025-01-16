@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import useFetch from "./hooks/useFetch";
 import useFilteredTodos from "./hooks/useFilteredTodos";
 
@@ -22,6 +22,10 @@ const TodoList = () => {
     }, []);
     const filteredTodos = useFilteredTodos(todos, searchTerm);
 
+    const handleSearchChange = useCallback((e) => {
+        setSearchTerm(e.target.value);
+    }, []);
+
     if (loading) return <div>Caricamento in corso....</div>;
 
     if (error) return <div>Errore: {error}</div>;
@@ -39,7 +43,7 @@ const TodoList = () => {
                     </li>
                 ))}
             </ul>
-            <input type="text" placeholder="Searc todos..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}/>
+            <input type="text" placeholder="Searc todos..." value={searchTerm} onChange={handleSearchChange}/>
             <ul>
                 {filteredTodos.map((todo) => (
                     <li key={todo.id}>{todo.title}</li>
