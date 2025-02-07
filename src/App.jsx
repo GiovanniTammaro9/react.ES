@@ -13,8 +13,9 @@ import { TodoProvider } from "./TodoContext";
 
 // Importiamo i nuovi componenti per le pagine Home e About
 import Home from './components/home';
-
 import About from './components/About';
+import Layout from './components/Layout';
+
 
 function App() {
   const items = ["Mela", "Banana", "Pera", "Arancia"];
@@ -36,6 +37,7 @@ function App() {
 
         {/* Definizione delle rotte */}
         <Routes>
+        <Route element={<Layout />} />
           <Route path="/" element={<Home items={items} />} />
           <Route path="/about" element={<About />} />
         </Routes>
