@@ -1,44 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { Link, useSearchParams } from "react-router-dom";
-import { useTodos } from "./TodoContext";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";  // Importa useDispatch e useSelector
+import { setTodos, setLoading, setError, completeTodo } from "./redux/todoSlice";  // Importa l'azione completeTodo
 
 const TodoList = () => {
-  const { todos, isLoading, error } = useTodos();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const searchQuery = searchParams.get("query") || ""; // Ottiene il termine di ricerca dall'URL
-  const [searchTerm, setSearchTerm] = useState(searchQuery);
+  const { todos, isLoading, error } = useSelector((state) => state.todos);  // Usa useSelector per leggere lo stato
+  const dispatch = useDispatch();  // Usa useDispatch per inviare azioni
 
-  // Aggiorna l'URL quando cambia il searchTerm
   useEffect(() => {
-    if (searchTerm) {
-      setSearchParams({ query: searchTerm });
-    } else {
-      setSearchParams({});
-    }
-  }, [searchTerm, setSearchParams]);
+    const fetchTodos = async () => {
+      dispatch(setLoading(true));
+      try {
+        const response = await fetch("https://jsonplaceholder.typicode.com/todos");
+        if (!response.ok) {
+          throw new Error("Errore nel caricamento dei to-do");
+        }
+        const data = await response.json();
+        dispatch(setTodos(data));  // Memorizza i To-Do nello store Redux
+      } catch (error) {
+        dispatch(setError(error.message));
+      } finally {
+        dispatch(setLoading(false));
+      }
+    };
+
+    fetchTodos();
+  }, [dispatch]);
+
+  // Funzione per completare un To-Do
+  const handleComplete = (id) => {
+    dispatch(completeTodo(id));  // Usa l'azione completeTodo
+  };
 
   if (isLoading) return <p>Caricamento...</p>;
   if (error) return <p>Errore: {error}</p>;
 
-  // Filtra i To-Do in base al termine di ricerca
-  const filteredTodos = todos.filter(todo =>
-    todo.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
-
   return (
     <div>
       <h2>Lista To-Do</h2>
-      <input
-        type="text"
-        placeholder="Cerca un To-Do..."
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-      />
-      
       <ul>
-        {filteredTodos.map(todo => (
-          <li key={todo.id}>
+        {todos.map(todo => (
+          <li key={todo.id} style={{ textDecoration: todo.completed ? 'line-through' : 'none' }}>
             <Link to={`/todos/${todo.id}`}>{todo.title}</Link>
+            <button onClick={() => handleComplete(todo.id)}>
+              {todo.completed ? "Completato" : "Completa"}
+            </button>
           </li>
         ))}
       </ul>
@@ -47,6 +53,8 @@ const TodoList = () => {
 };
 
 export default TodoList;
+
+
 
 
 
