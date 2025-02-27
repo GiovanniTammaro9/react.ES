@@ -1,48 +1,44 @@
-import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { useTodos } from "./TodoContext";
 
 const TodoList = () => {
-  const { todos, isLoading, error } = useTodos(); // Accesso ai dati dal contesto
-  const [searchTerm, setSearchTerm] = useState("");
-  const searchInputRef = useRef(null);
+  const { todos, isLoading, error } = useTodos();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get("query") || ""; // Ottiene il termine di ricerca dall'URL
+  const [searchTerm, setSearchTerm] = useState(searchQuery);
 
-  // Focus automatico sull'input
+  // Aggiorna l'URL quando cambia il searchTerm
   useEffect(() => {
-    if (searchInputRef.current) {
-      searchInputRef.current.focus();
+    if (searchTerm) {
+      setSearchParams({ query: searchTerm });
+    } else {
+      setSearchParams({});
     }
-  }, []);
+  }, [searchTerm, setSearchParams]);
 
-  // Gestione del cambio dell'input di ricerca
-  const handleSearchChange = useCallback((e) => {
-    setSearchTerm(e.target.value);
-  }, []);
-
-  
-  const filteredTodos = useMemo(() => {
-    return todos.filter((todo) =>
-      todo.title.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [todos, searchTerm]);
-
-  if (isLoading) return <p>Caricamento in corso...</p>;
+  if (isLoading) return <p>Caricamento...</p>;
   if (error) return <p>Errore: {error}</p>;
+
+  // Filtra i To-Do in base al termine di ricerca
+  const filteredTodos = todos.filter(todo =>
+    todo.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   return (
     <div>
-      <h1>Lista di To-Do</h1>
+      <h2>Lista To-Do</h2>
       <input
         type="text"
-        placeholder="Cerca..."
+        placeholder="Cerca un To-Do..."
         value={searchTerm}
-        onChange={handleSearchChange}
-        ref={searchInputRef}
+        onChange={(e) => setSearchTerm(e.target.value)}
       />
+      
       <ul>
-        {filteredTodos.map((todo) => (
+        {filteredTodos.map(todo => (
           <li key={todo.id}>
-            <strong>{todo.title}</strong> -{" "}
-            {todo.completed ? "Completato" : "Incompleto"}
+            <Link to={`/todos/${todo.id}`}>{todo.title}</Link>
           </li>
         ))}
       </ul>
@@ -51,3 +47,7 @@ const TodoList = () => {
 };
 
 export default TodoList;
+
+
+
+

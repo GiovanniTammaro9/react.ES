@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, Outlet } from 'react-router-dom';
 
-const Layout = () => {
+const Layout = ({ children }) => {
   return (
     <div>
       {/* Barra di navigazione */}
@@ -19,6 +19,7 @@ const Layout = () => {
       {/* Contenuto principale delle pagine */}
       <div className="main-content">
         <Outlet /> {/* Qui verrà renderizzato il contenuto specifico della pagina */}
+        {children}
       </div>
     </div>
   );

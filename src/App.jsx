@@ -7,43 +7,38 @@ import LoginForm from "./LoginForm";
 import Uncontrolledinput from "./Uncontrolledinput";
 import ItemList from "./ItemList";
 import Card from "./Card";
-import useFetch from "./hooks/useFetch";
 import TodoList from "./TodoList";
+import TodoDetails from "./TodoDetails";
 import { TodoProvider } from "./TodoContext";
 
-// Importiamo i nuovi componenti per le pagine Home e About
-import Home from './components/home';
+// Componenti per le pagine
+import Home from "./components/home";
 import About from './components/About';
 import Layout from './components/Layout';
-
 
 function App() {
   const items = ["Mela", "Banana", "Pera", "Arancia"];
 
   return (
     <Router>
-      <div>
-        {/* Barra di navigazione */}
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-          </ul>
-        </nav>
+      <TodoProvider> {/* Avvolge tutte le pagine che possono usare useTodos() */}
+        <Layout>
+          {/* Barra di navigazione */}
+          <nav>
+            <ul>
+              <li><Link to="/">Home</Link></li>
+              <li><Link to="/about">About</Link></li>
+            </ul>
+          </nav>
 
-        {/* Definizione delle rotte */}
-        <Routes>
-        <Route element={<Layout />} />
-          <Route path="/" element={<Home items={items} />} />
-          <Route path="/about" element={<About />} />
-        </Routes>
+          {/* Definizione delle rotte */}
+          <Routes>
+            <Route path="/" element={<Home items={items} />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/todos/:id" element={<TodoDetails />} />
+          </Routes>
 
-        {/* Altri componenti che rimangono invariati */}
-        <TodoProvider>
+          {/* Altri componenti sempre visibili */}
           <Textinput />
           <Counter />
           <LoginForm />
@@ -57,10 +52,11 @@ function App() {
             </p>
           </Card>
           <TodoList />
-        </TodoProvider>
-      </div>
+        </Layout>
+      </TodoProvider>
     </Router>
   );
 }
 
 export default App;
+
